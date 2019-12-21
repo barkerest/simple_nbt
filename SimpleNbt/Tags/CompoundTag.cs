@@ -12,6 +12,10 @@ namespace SimpleNbt.Tags
 	/// </summary>
 	public sealed class CompoundTag : INamedBinaryTag, IDictionary<string, INamedBinaryTag>, IList<INamedBinaryTag>
 	{
+		public CompoundTag()
+		{
+			Name = "";
+		}
 		
 		/// <summary>
 		/// Creates a new compound tag.

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleNbt", "SimpleNbt\SimpleNbt.csproj", "{F6CD3367-2B3D-401F-A957-4CB659721475}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleNbtTests", "SimpleNbtTests\SimpleNbtTests.csproj", "{EE59A60A-AE6C-40BA-BFA1-80F1D7BCD7C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{F6CD3367-2B3D-401F-A957-4CB659721475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6CD3367-2B3D-401F-A957-4CB659721475}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6CD3367-2B3D-401F-A957-4CB659721475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE59A60A-AE6C-40BA-BFA1-80F1D7BCD7C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE59A60A-AE6C-40BA-BFA1-80F1D7BCD7C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE59A60A-AE6C-40BA-BFA1-80F1D7BCD7C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE59A60A-AE6C-40BA-BFA1-80F1D7BCD7C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

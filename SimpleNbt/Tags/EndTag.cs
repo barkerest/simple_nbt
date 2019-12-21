@@ -7,15 +7,10 @@ namespace SimpleNbt.Tags
 	/// </summary>
 	public sealed class EndTag : INamedBinaryTag
 	{
-		private EndTag()
+		public EndTag()
 		{
 			
 		}
-		
-		/// <summary>
-		/// The single instance of the EndTag.
-		/// </summary>
-		public static readonly EndTag Instance = new EndTag();
 		
 		/// <inheritdoc />
 		public TagType Type { get; } = TagType.End;

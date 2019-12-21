@@ -7,6 +7,11 @@ namespace SimpleNbt.Tags
 	/// </summary>
 	public sealed class IntTag : INamedBinaryTag
 	{
+		public IntTag()
+		{
+			Name = "";
+		}
+		
 		public IntTag(string name)
 		{
 			Name = name;

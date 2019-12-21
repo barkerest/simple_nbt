@@ -7,6 +7,11 @@ namespace SimpleNbt.Tags
 	/// </summary>
 	public sealed class ByteArrayTag : INamedBinaryTag
 	{
+		public ByteArrayTag()
+		{
+			Name = "";
+		}
+		
 		public ByteArrayTag(string name)
 		{
 			Name = name;
