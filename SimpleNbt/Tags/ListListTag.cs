@@ -25,7 +25,7 @@ namespace SimpleNbt.Tags
 		public TagType Type { get; } = TagType.List;
 		
 		/// <inheritdoc />
-		public TagType ListType { get; } = TagType.String;
+		public TagType ListType { get; } = TagType.List;
 
 		/// <inheritdoc />
 		public string Name { get; }

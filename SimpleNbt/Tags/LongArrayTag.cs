@@ -18,7 +18,7 @@ namespace SimpleNbt.Tags
 		}
 		
 		/// <inheritdoc />
-		public TagType Type { get; } = TagType.IntArray;
+		public TagType Type { get; } = TagType.LongArray;
 		
 		/// <inheritdoc />
 		public string Name { get; }

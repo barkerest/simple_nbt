@@ -17,15 +17,14 @@ namespace SimpleNbtTests.Tags
 		[Theory]
 		[InlineData(null)]
 		[InlineData(new byte[0])]
-		[InlineData(new byte[]{1,2,3,4,5,6})]
-		[InlineData(new byte[]{byte.MinValue, byte.MaxValue})]
+		[InlineData(new byte[] {byte.MinValue, 1, 2, 3, 4, 5, 6, byte.MaxValue})]
 		public void EncodeDecodeCorrectly(byte[] value)
 		{
-			var item = new ByteArrayTag() { Payload = value };
+			var item = new ByteArrayTag() {Payload = value};
 			var strm = new MemoryStream();
 			item.EncodePayload(strm);
 			strm.Position = 0;
-			
+
 			item = new ByteArrayTag();
 			item.DecodePayload(strm);
 
