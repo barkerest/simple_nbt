@@ -131,6 +131,7 @@ namespace SimpleNbt
             new SimpleListConverter<ListTag<LongTag>, LongTag, long, List<DateTime>, DateTime>(nm => new ListTag<LongTag>(nm), v => v.ToList(), v => new DateTime(v), v => v.Ticks),
             new SimpleListConverter<ListTag<LongTag>, LongTag, long, IEnumerable<DateTime>, DateTime>(nm => new ListTag<LongTag>(nm), v => v, v => new DateTime(v), v => v.Ticks),
             
+            
         };
         
 			
@@ -209,5 +210,108 @@ namespace SimpleNbt
 
 			return ret as CompoundTag ?? throw new InvalidDataException($"Expected to load compound tag, not {ret}.");
 		}
-	}
+
+        private static readonly object ConverterLock = new object(); 
+        private static Dictionary<Type, Dictionary<Type, INamedBinaryTagConverter>> _toConverters;
+        private static Dictionary<Type, Dictionary<Type, INamedBinaryTagConverter>> _fromConverters;
+
+        private static void InitConverters()
+        {
+            if (_toConverters != null && _fromConverters != null) return;
+            
+            _toConverters = new Dictionary<Type, Dictionary<Type, INamedBinaryTagConverter>>();
+            _fromConverters = new Dictionary<Type, Dictionary<Type, INamedBinaryTagConverter>>();
+
+            foreach (var conv in DefaultConverters)
+            {
+                if (!AddConverter(conv)) throw new InvalidOperationException("Failed to register default converters.");
+            }
+        }
+
+        private static bool AddConverter(INamedBinaryTagConverter converter)
+        {
+            if (!_toConverters.ContainsKey(converter.TagType))
+            {
+                _toConverters[converter.TagType] = new Dictionary<Type, INamedBinaryTagConverter>();
+            }
+
+            if (!_fromConverters.ContainsKey(converter.TagType))
+            {
+                _fromConverters[converter.TagType] = new Dictionary<Type, INamedBinaryTagConverter>();
+            }
+
+            // both should be false or both should be true, anything else would be an error.
+            var toReg = _toConverters[converter.TagType].ContainsKey(converter.DataType);
+            var fromReg = _fromConverters[converter.TagType].ContainsKey(converter.DataType);
+            
+            if (toReg && fromReg) return false;
+            if (toReg || fromReg) throw new InvalidOperationException("Partial registration detected.");
+            
+            _toConverters[converter.TagType][converter.DataType] = converter;
+            _fromConverters[converter.TagType][converter.DataType] = converter;
+            
+            return true;
+        }
+        
+        /// <summary>
+        /// Registers a converter.
+        /// </summary>
+        /// <param name="converter">The converter to register.</param>
+        /// <returns>Returns true on success, or false if another converter is already registered for the specific TagType and DataType.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static bool RegisterConverter(INamedBinaryTagConverter converter)
+        {
+            if (converter is null) throw new ArgumentNullException(nameof(converter));
+            lock (ConverterLock)
+            {
+                InitConverters();
+                return AddConverter(converter);
+            }
+        }
+
+        /// <summary>
+        /// Finds the converter to convert from the DataType to the TagType.
+        /// </summary>
+        /// <param name="tagType">The named binary tag type.</param>
+        /// <param name="dataType">The data to store in the tag.</param>
+        /// <returns>Returns the converter on success, null otherwise.</returns>
+        public static INamedBinaryTagConverter FindToConverter(Type tagType, Type dataType)
+        {
+            lock (ConverterLock)
+            {
+                InitConverters();
+                if (_toConverters.ContainsKey(tagType) && _toConverters[tagType].ContainsKey(dataType))
+                {
+                    return _toConverters[tagType][dataType];
+                }
+                // TODO: Null values.
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the converter to convert from the TagType to the DataType.
+        /// </summary>
+        /// <param name="tagType">The named binary tag type.</param>
+        /// <param name="dataType">The data to return from the tag.</param>
+        /// <returns>Returns the converter on success, null otherwise.</returns>
+        public static INamedBinaryTagConverter FindFromConverter(Type tagType, Type dataType)
+        {
+            lock (ConverterLock)
+            {
+                InitConverters();
+                if (_fromConverters.ContainsKey(tagType) && _fromConverters[tagType].ContainsKey(dataType))
+                {
+                    return _fromConverters[tagType][dataType];
+                }
+                // TODO: Empty lists and null values.
+            }
+
+            return null;
+        }
+        
+        
+        
+    }
 }
