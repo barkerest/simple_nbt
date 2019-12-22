@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag holding an array of 32-bit integers.
 	/// </summary>
-	public sealed class IntArrayTag : INamedBinaryTag
+	public sealed class IntArrayTag : INamedBinaryTag<int[]>
 	{
 		public IntArrayTag()
 		{

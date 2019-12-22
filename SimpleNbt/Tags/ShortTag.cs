@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag storing a single signed 16-bit integer value. 
 	/// </summary>
-	public sealed class ShortTag : INamedBinaryTag
+	public sealed class ShortTag : INamedBinaryTag<short>
 	{
 		public ShortTag()
 		{

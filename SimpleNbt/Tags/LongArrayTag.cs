@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag holding an array of 64-bit integers.
 	/// </summary>
-	public sealed class LongArrayTag : INamedBinaryTag
+	public sealed class LongArrayTag : INamedBinaryTag<long[]>
 	{
 		public LongArrayTag()
 		{

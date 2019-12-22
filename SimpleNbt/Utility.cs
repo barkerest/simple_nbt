@@ -2,120 +2,64 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using SimpleNbt.Converters;
 using SimpleNbt.Tags;
 
 namespace SimpleNbt
 {
 	public static class Utility
 	{
-		public delegate INamedBinaryTag ConvertToNbt(string name, object value);
-
-		public delegate object ConvertFromNbt(INamedBinaryTag tag);
-
-
 		#region Default Converters
 
-		private static readonly Dictionary<Type, (ConvertToNbt, ConvertFromNbt)> Converters
-			= new Dictionary<Type, (ConvertToNbt, ConvertFromNbt)>()
-			{
-				{
-					typeof(bool), (
-						(nm, val) => new ByteTag(nm) {Payload = (sbyte) ((bool) val ? 1 : 0)},
-						tag => ((ByteTag) tag).Payload != 0
-					)
-				},
-				{
-					typeof(byte), (
-						(nm, val) => new ByteTag(nm) {Payload = unchecked((sbyte) (byte) val)},
-						tag => unchecked((byte) ((ByteTag) tag).Payload)
-					)
-				},
-				{
-					typeof(sbyte), (
-						(nm, val) => new ByteTag(nm) {Payload = (sbyte) val},
-						tag => ((ByteTag) tag).Payload
-					)
-				},
-				{
-					typeof(short), (
-						(nm, val) => new ShortTag(nm) {Payload = (short) val},
-						tag => ((ShortTag) tag).Payload
-					)
-				},
-				{
-					typeof(ushort), (
-						(nm, val) => new ShortTag(nm) {Payload = unchecked((short) (ushort) val)},
-						tag => unchecked((ushort) ((ShortTag) tag).Payload)
-					)
-				},
-				{
-					typeof(int), (
-						(nm, val) => new IntTag(nm) {Payload = (int) val},
-						tag => ((IntTag) tag).Payload
-					)
-				},
-				{
-					typeof(uint), (
-						(nm, val) => new IntTag(nm) {Payload = unchecked((int) (uint) val)},
-						tag => unchecked((uint) ((IntTag) tag).Payload)
-					)
-				},
-				{
-					typeof(long), (
-						(nm, val) => new LongTag(nm) {Payload = (long) val},
-						tag => ((LongTag) tag).Payload
-					)
-				},
-				{
-					typeof(ulong), (
-						(nm, val) => new LongTag(nm) {Payload = unchecked((long) (ulong) val)},
-						tag => unchecked((ulong) ((LongTag) tag).Payload)
-					)
-				},
-				{
-					typeof(float), (
-						(nm, val) => new SingleTag(nm) {Payload = (float) val},
-						tag => ((SingleTag) tag).Payload
-					)
-				},
-				{
-					typeof(double), (
-						(nm, val) => new DoubleTag(nm) {Payload = (double) val},
-						tag => ((DoubleTag) tag).Payload
-					)
-				},
-				{
-					typeof(DateTime), (
-						(nm, val) => new LongTag(nm) {Payload = ((DateTime) val).Ticks},
-						tag => new DateTime(((LongTag) tag).Payload)
-					)
-				},
-				{
-					typeof(Guid), (
-						(nm, val) => new ByteArrayTag(nm) {Payload = ((Guid) val).ToByteArray()},
-						tag => new Guid(((ByteArrayTag) tag).Payload)
-					)
-				},
-				{
-					typeof(decimal), (
-						(nm, val) => new IntArrayTag(nm) {Payload = decimal.GetBits((decimal) val)},
-						tag => new decimal(((IntArrayTag) tag).Payload)
-					)
-				},
-				{
-					typeof(string), (
-						(nm, val) => new StringTag(nm) {Payload = (string) val},
-						tag => ((StringTag) tag).Payload
-					)
-				},
-				{
-					typeof(char), (
-						(nm, val) => new ShortTag(nm) {Payload = unchecked((short) (char) val)},
-						tag => unchecked((char) ((ShortTag) tag).Payload)
-					)
-				}
-			};
-
+        private static readonly INamedBinaryTagConverter[] DefaultConverters =
+        {
+            new SimpleTypeConverter<StringTag, string>(nm => new StringTag(nm)), 
+            new SimpleTypeConverter<ByteTag, sbyte, bool>(nm => new ByteTag(nm), v => (v != 0), v => (sbyte)(v ? 1 : 0)),
+            new SimpleTypeConverter<ByteTag, sbyte, byte>(nm => new ByteTag(nm), v => unchecked((byte)v), v => unchecked((sbyte)v)),
+            new SimpleTypeConverter<ByteTag, sbyte>(nm => new ByteTag(nm)),
+            new SimpleTypeConverter<ShortTag, short, byte>(nm => new ShortTag(nm), v => unchecked((byte)v), v => v), 
+            new SimpleTypeConverter<IntTag, int, byte>(nm => new IntTag(nm), v => unchecked((byte)v), v => v), 
+            new SimpleTypeConverter<ShortTag, short>(nm => new ShortTag(nm)),
+            new SimpleTypeConverter<ShortTag, short, ushort>(nm => new ShortTag(nm), v => unchecked((ushort)v), v => unchecked((short)v)),
+            new SimpleTypeConverter<IntTag, int, ushort>(nm => new IntTag(nm), v => unchecked((ushort)v), v => v),
+            new SimpleTypeConverter<ShortTag, short, char>(nm => new ShortTag(nm), v => unchecked((char)v), v => unchecked((short)v)),
+            new SimpleTypeConverter<IntTag, int, char>(nm => new IntTag(nm), v => unchecked((char)v), v => v), 
+            new SimpleTypeConverter<IntTag, int>(nm => new IntTag(nm)),
+            new SimpleTypeConverter<IntTag, int, uint>(nm => new IntTag(nm), v => unchecked((uint)v), v => unchecked((int)v)),
+            new SimpleTypeConverter<LongTag, long, uint>(nm => new LongTag(nm), v => unchecked((uint)v), v => v), 
+            new SimpleTypeConverter<LongTag, long>(nm => new LongTag(nm)),
+            new SimpleTypeConverter<LongTag, long, ulong>(nm => new LongTag(nm), v => unchecked((ulong)v), v => unchecked((long)v)),
+            new SimpleTypeConverter<SingleTag, float>(nm => new SingleTag(nm)),
+            new SimpleTypeConverter<SingleTag, float, double>(nm => new SingleTag(nm), v => v, v => (float)v), 
+            new SimpleTypeConverter<DoubleTag, double>(nm => new DoubleTag(nm)),
+            new SimpleTypeConverter<DoubleTag, double, float>(nm => new DoubleTag(nm), v => (float)v, v => v), 
+            new SimpleTypeConverter<LongTag, long, DateTime>(nm => new LongTag(nm), v => new DateTime(v), v => v.Ticks),
+            new SimpleTypeConverter<IntArrayTag, int[], decimal>(nm => new IntArrayTag(nm), v => new decimal(v), v => decimal.GetBits(v)),
+            new SimpleTypeConverter<DoubleTag, double, decimal>(nm => new DoubleTag(nm), v => (decimal)v, v => (double)v),
+            new SimpleTypeConverter<StringTag, string, Guid>(nm => new StringTag(nm), v => Guid.Parse(v), v => v.ToString()), 
+            new SimpleTypeConverter<ByteArrayTag, byte[], Guid>(nm => new ByteArrayTag(nm), v => new Guid(v), v => v.ToByteArray()),
+            new SimpleTypeConverter<LongArrayTag, long[], Guid>(nm => new LongArrayTag(nm), 
+                v => {
+                    var b = new byte[16];
+                    BitConverter.GetBytes(v[0]).CopyTo(b, 0);
+                    BitConverter.GetBytes(v[1]).CopyTo(b, 8);
+                    return new Guid(b);
+                },
+                v => {
+                    var b = v.ToByteArray();
+                    var ret = new long[2];
+                    ret[0] = BitConverter.ToInt64(b, 0);
+                    ret[1] = BitConverter.ToInt64(b, 8);
+                    return ret;
+                }
+            ),
+            new SimpleTypeConverter<ByteArrayTag, byte[]>(nm => new ByteArrayTag(nm)),
+            new SimpleTypeConverter<IntArrayTag, int[]>(nm => new IntArrayTag(nm)),
+            new SimpleTypeConverter<LongArrayTag, long[]>(nm => new LongArrayTag(nm)), 
+            
+        };
+        
+			
 		#endregion
 
 		/// <summary>

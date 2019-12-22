@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag holding a double precision floating point value.
 	/// </summary>
-	public sealed class DoubleTag : INamedBinaryTag
+	public sealed class DoubleTag : INamedBinaryTag<double>
 	{
 		public DoubleTag()
 		{

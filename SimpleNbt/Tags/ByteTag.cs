@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag storing a single signed byte.
 	/// </summary>
-	public sealed class ByteTag : INamedBinaryTag
+	public sealed class ByteTag : INamedBinaryTag<sbyte>
 	{
 		public ByteTag()
 		{

@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag holding a string value.
 	/// </summary>
-	public sealed class StringTag : INamedBinaryTag
+	public sealed class StringTag : INamedBinaryTag<string>
 	{
 		public StringTag()
 		{

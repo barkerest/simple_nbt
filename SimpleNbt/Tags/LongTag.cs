@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag storing a single signed 64-bit integer value. 
 	/// </summary>
-	public sealed class LongTag : INamedBinaryTag
+	public sealed class LongTag : INamedBinaryTag<long>
 	{
 		public LongTag()
 		{

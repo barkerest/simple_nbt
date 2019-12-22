@@ -30,4 +30,16 @@ namespace SimpleNbt
 		void DecodePayload(Stream input);
 
 	}
+
+    /// <summary>
+    /// A strongly type interface for named binary tags with a payload.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface INamedBinaryTag<T> : INamedBinaryTag
+    {
+        /// <summary>
+        /// The payload of this tag.
+        /// </summary>
+        T Payload { get; set; }
+    }
 }

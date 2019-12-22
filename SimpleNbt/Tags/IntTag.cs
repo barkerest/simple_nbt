@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag storing a single signed 32-bit integer.
 	/// </summary>
-	public sealed class IntTag : INamedBinaryTag
+	public sealed class IntTag : INamedBinaryTag<int>
 	{
 		public IntTag()
 		{

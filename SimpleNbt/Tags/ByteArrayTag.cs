@@ -5,7 +5,7 @@ namespace SimpleNbt.Tags
 	/// <summary>
 	/// A tag holding an array of bytes.
 	/// </summary>
-	public sealed class ByteArrayTag : INamedBinaryTag
+	public sealed class ByteArrayTag : INamedBinaryTag<byte[]>
 	{
 		public ByteArrayTag()
 		{
