@@ -37,5 +37,10 @@ namespace SimpleNbt.Tags
 		{
 			// no payload to decode.
 		}
+
+		public override string ToString()
+		{
+			return "-";
+		}
 	}
 }

@@ -33,5 +33,10 @@ namespace SimpleNbt.Tags
 
 		/// <inheritdoc />
 		public void DecodePayload(Stream input) => Payload = input.DecodeInt8Payload();
+
+		public override string ToString()
+		{
+			return $"{Payload}B";
+		}
 	}
 }

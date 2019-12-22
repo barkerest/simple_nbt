@@ -277,17 +277,36 @@ namespace SimpleNbt
         /// <returns>Returns the converter on success, null otherwise.</returns>
         public static INamedBinaryTagConverter FindToConverter(Type tagType, Type dataType)
         {
-            lock (ConverterLock)
+	        if (tagType is null) throw new ArgumentNullException(nameof(tagType));
+	        if (dataType is null) throw new ArgumentNullException(nameof(dataType));
+	        lock (ConverterLock)
             {
                 InitConverters();
                 if (_toConverters.ContainsKey(tagType) && _toConverters[tagType].ContainsKey(dataType))
                 {
                     return _toConverters[tagType][dataType];
                 }
-                // TODO: Null values.
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Finds the first registered converter for the specified data type.
+        /// </summary>
+        /// <param name="dataType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static INamedBinaryTagConverter FindDefaultToConverter(Type dataType)
+        {
+	        if (dataType is null) throw new ArgumentNullException(nameof(dataType));
+	        lock (ConverterLock)
+	        {
+		        InitConverters();
+		        return _toConverters
+			        .SelectMany(x => x.Value.Values.Where(y => y.DataType == dataType))
+			        .FirstOrDefault();
+	        }
         }
 
         /// <summary>
@@ -298,6 +317,8 @@ namespace SimpleNbt
         /// <returns>Returns the converter on success, null otherwise.</returns>
         public static INamedBinaryTagConverter FindFromConverter(Type tagType, Type dataType)
         {
+	        if (tagType is null) throw new ArgumentNullException(nameof(tagType));
+	        if (dataType is null) throw new ArgumentNullException(nameof(dataType));
             lock (ConverterLock)
             {
                 InitConverters();
@@ -305,12 +326,29 @@ namespace SimpleNbt
                 {
                     return _fromConverters[tagType][dataType];
                 }
-                // TODO: Empty lists and null values.
             }
 
             return null;
         }
-        
+
+        /// <summary>
+        /// Finds the first registered converter for the specified tag type.
+        /// </summary>
+        /// <param name="tagType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static INamedBinaryTagConverter FindDefaultFromConverter(Type tagType)
+        {
+	        if (tagType is null) throw new ArgumentNullException(nameof(tagType));
+	        lock (ConverterLock)
+	        {
+		        InitConverters();
+		        return _fromConverters
+			        .SelectMany(x => x.Value.Values.Where(y => y.TagType == tagType))
+			        .FirstOrDefault();
+	        }    
+        }
+         
         
         
     }

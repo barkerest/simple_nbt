@@ -113,5 +113,10 @@ namespace SimpleNbt.Tags
 				_payload[index] = value;
 			}
 		}
+
+		public override string ToString()
+		{
+			return "[" + string.Join(",", _payload) + "]";
+		}
 	}
 }

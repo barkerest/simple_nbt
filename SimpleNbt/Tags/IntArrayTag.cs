@@ -50,5 +50,10 @@ namespace SimpleNbt.Tags
 				Payload[i] = input.DecodeInt32Payload();
 			}
 		}
+
+		public override string ToString()
+		{
+			return "[I;" + string.Join(",", Payload ?? new int[0]) + "]";
+		}
 	}
 }

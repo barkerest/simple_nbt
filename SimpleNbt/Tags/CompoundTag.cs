@@ -237,5 +237,15 @@ namespace SimpleNbt.Tags
 				_children[index] = value;
 			}
 		}
+
+		public override string ToString()
+		{
+			return "{" + string.Join(",",
+				       _children.Select(x =>
+					       (x.Name ?? "")
+					       .Replace("\\", "\\\\")
+					       .Replace("\"", "\\\"")
+					       + ":" + x.ToString())) + "}";
+		}
 	}
 }

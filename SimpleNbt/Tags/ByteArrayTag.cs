@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 
 namespace SimpleNbt.Tags
 {
@@ -48,6 +49,11 @@ namespace SimpleNbt.Tags
 			{
 				if (input.Read(Payload) != size) throw new InvalidDataException($"Expecting {size} bytes of data for byte array payload.");
 			}
+		}
+
+		public override string ToString()
+		{
+			return "[B;" + string.Join(",", (Payload ?? new byte[0])) + "]";
 		}
 	}
 }

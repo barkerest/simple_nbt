@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SimpleNbt.Tags
 {
@@ -36,5 +37,9 @@ namespace SimpleNbt.Tags
 		public void DecodePayload(Stream input)
 			=> Payload = input.DecodeSinglePayload();
 
+		public override string ToString()
+		{
+			return $"{Payload}F";
+		}
 	}
 }
