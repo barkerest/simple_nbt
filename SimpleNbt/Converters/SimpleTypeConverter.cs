@@ -23,7 +23,7 @@ namespace SimpleNbt.Converters
         public Type TagType { get; } = typeof(TTag);
         
         /// <inheritdoc />
-        public INamedBinaryTag ConvertToTag(string name, object value)
+        public INamedBinaryTag ConvertToTag(string name, object value, NamingConvention convention)
         {
             var ret = _construct(name);
             ret.Payload = (TData) value;
@@ -31,7 +31,7 @@ namespace SimpleNbt.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertFromTag(INamedBinaryTag tag)
+        public object ConvertFromTag(INamedBinaryTag tag, NamingConvention convention)
         {
             var t = tag as TTag ?? throw new InvalidCastException();
             return t.Payload;
@@ -65,7 +65,7 @@ namespace SimpleNbt.Converters
         public Type TagType { get; } = typeof(TTag);
         
         /// <inheritdoc />
-        public INamedBinaryTag ConvertToTag(string name, object value)
+        public INamedBinaryTag ConvertToTag(string name, object value, NamingConvention convention)
         {
             var ret = _construct(name);
             ret.Payload = _from((TRetData) value);
@@ -73,7 +73,7 @@ namespace SimpleNbt.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertFromTag(INamedBinaryTag tag)
+        public object ConvertFromTag(INamedBinaryTag tag, NamingConvention convention)
         {
             var t = tag as TTag ?? throw new InvalidCastException();
             return _to(t.Payload);

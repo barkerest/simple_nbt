@@ -20,16 +20,18 @@ namespace SimpleNbt
         /// <summary>
         /// Creates a tag with the specified value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
+        /// <param name="name">The name for this tag.</param>
+        /// <param name="value">The value for this tag.</param>
+        /// <param name="convention">The naming convention to use when naming child tags.</param>
         /// <returns>Returns a named binary tag.</returns>
-        INamedBinaryTag ConvertToTag(string name, object value);
+        INamedBinaryTag ConvertToTag(string name, object value, NamingConvention convention);
 
         /// <summary>
         /// Gets the value from the specified tag.
         /// </summary>
-        /// <param name="tag"></param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="convention">The naming convention to use when decoding child tags.</param>
         /// <returns>Returns the value of the tag.</returns>
-        object ConvertFromTag(INamedBinaryTag tag);
+        object ConvertFromTag(INamedBinaryTag tag, NamingConvention convention);
     }
 }

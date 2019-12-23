@@ -32,7 +32,7 @@ namespace SimpleNbt.Converters
         public Type TagType { get; } = typeof(TListTag);
         
         /// <inheritdoc />
-        public INamedBinaryTag ConvertToTag(string name, object value)
+        public INamedBinaryTag ConvertToTag(string name, object value, NamingConvention convention)
         {
             var values = value as IEnumerable<TEntryData>;
             if (values is null) throw new InvalidCastException();
@@ -49,7 +49,7 @@ namespace SimpleNbt.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertFromTag(INamedBinaryTag tag)
+        public object ConvertFromTag(INamedBinaryTag tag, NamingConvention convention)
         {
             var t = tag as TListTag;
             return _deconstruct(t.Select(x => x.Payload));
@@ -89,7 +89,7 @@ namespace SimpleNbt.Converters
         public Type TagType { get; } = typeof(TListTag);
 
         /// <inheritdoc />
-        public INamedBinaryTag ConvertToTag(string name, object value)
+        public INamedBinaryTag ConvertToTag(string name, object value, NamingConvention convention)
         {
             var values = value as IEnumerable<TListData>;
             if (values is null) throw new InvalidCastException();
@@ -106,7 +106,7 @@ namespace SimpleNbt.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertFromTag(INamedBinaryTag tag)
+        public object ConvertFromTag(INamedBinaryTag tag, NamingConvention convention)
         {
             var t = tag as TListTag;
             return _deconstruct(t.Select(x => _to(x.Payload)));
