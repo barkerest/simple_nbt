@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SimpleNbt.Attributes;
@@ -21,18 +22,17 @@ namespace SimpleNbt.Converters
 			if (modelType.IsAbstract) throw new ArgumentException("Model type cannot be abstract.");
 			if (modelType.IsPrimitive) throw new ArgumentException("Model type cannot be a primitive.");
 			if (modelType == typeof(string)) throw new ArgumentException("Model type cannot be string.");
-			if (modelType.IsArray) throw new ArgumentException("Model type cannot be an array.");
-			if (typeof(IList).IsAssignableFrom(modelType)) throw new ArgumentException("Model type cannot be a list.");
 			if (typeof(IDictionary).IsAssignableFrom(modelType)) throw new ArgumentException("Model type cannot be a dictionary.");
+			if (typeof(IList).IsAssignableFrom(modelType)) throw new ArgumentException("Model type cannot be a list.");
 			if (modelType.IsPointer) throw new ArgumentException("Model type cannot be a pointer.");
+			
+			_construct = modelType.GetConstructor(Type.EmptyTypes);
+			if (_construct is null) throw new ArgumentException("Model type must have a public parameterless constructor.");
 
 			if (!Utility.RegisterConverter(this)) throw new InvalidOperationException($"Cannot register generic converter for {modelType}.");
 
 			try
 			{
-				_construct = modelType.GetConstructor(Type.EmptyTypes);
-				if (_construct is null) throw new ArgumentException("Model type must have a public parameterless constructor.");
-
 				var props = modelType
 				            .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 				            .Where(x => x.CanRead && x.CanWrite)
@@ -77,10 +77,23 @@ namespace SimpleNbt.Converters
 			
 			var ret = new CompoundTag(name);
 
+			ret.Add(new StringTag(Utility.DataTypeNameProperty) {Payload = DataType.FullName});
+			
 			foreach (var prop in _properties)
 			{
 				var propValue = prop.GetValue(value);
-				var propTag = prop.Converter.ConvertToTag(prop.ExplicitName ?? convention.FormatName(prop.Name), propValue, convention);
+				var propName = prop.ExplicitName ?? convention.FormatName(prop.Name);
+				INamedBinaryTag propTag;
+				
+				if (prop.DataType != null)	// explicit property type.
+				{
+					propTag = Utility.FindDefaultToConverter(prop.DataType).ConvertToTag(propName, propValue, convention);
+				}
+				else
+				{
+					propTag = ObjectConverter.ConvertToTag(propName, propValue, convention);
+				}
+				
 				if (propTag != null)
 				{
 					ret.Add(propTag);
@@ -102,12 +115,24 @@ namespace SimpleNbt.Converters
 				var propName = prop.ExplicitName ?? convention.FormatName(prop.Name);
 				if (compound.ContainsKey(propName))
 				{
-					var propValue = prop.Converter.ConvertFromTag(compound[propName], convention);
+					var itemTag = compound[propName];
+					
+					object propValue;
+					if (prop.DataType != null)
+					{
+						propValue = Utility.FindConverter(itemTag.GetType(), prop.DataType).ConvertFromTag(itemTag, convention);
+					}
+					else
+					{
+						propValue = ObjectConverter.ConvertFromTag(itemTag, convention);
+					}
+					
 					prop.SetValue(ret, propValue);
 				}
 			}
 
 			return ret;
 		}
+		
 	}
 }

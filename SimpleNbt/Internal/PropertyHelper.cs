@@ -18,20 +18,14 @@ namespace SimpleNbt.Internal
 
 			ExplicitName = attribute?.Name;
 
-			DataType = property.PropertyType;
-
-			var t = attribute?.TagType;
-			if (t is null)
+			if (attribute != null && attribute.DataType != null)
 			{
-				Converter = Utility.FindDefaultToConverter(DataType)
-					?? throw new InvalidCastException($"Failed to locate converter for {DataType}.");
-				TagType = Converter.TagType;
+				if (!property.PropertyType.IsAssignableFrom(attribute.DataType)) throw new InvalidCastException($"The explicit datatype in the attribute ({attribute.DataType}) is not assignable to the property type ({property.PropertyType}).");
+				DataType = attribute.DataType;
 			}
 			else
 			{
-				TagType = t;
-				Converter = Utility.FindConverter(TagType, DataType) 
-					?? throw new InvalidCastException($"Failed to locate converter from {DataType} to {TagType}.");
+				DataType = property.PropertyType;
 			}
 		}
 		
@@ -40,10 +34,6 @@ namespace SimpleNbt.Internal
 		public string ExplicitName { get; }
 		
 		public Type DataType { get; }
-		
-		public Type TagType { get; }
-
-		public INamedBinaryTagConverter Converter { get; }
 
 		public object GetValue(object entity) => _property.GetValue(entity);
 

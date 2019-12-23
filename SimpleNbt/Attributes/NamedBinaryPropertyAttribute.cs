@@ -44,7 +44,8 @@ namespace SimpleNbt.Attributes
 				}
 			} 
 		}
-		
-		
+
+		/// <inheritdoc />
+		public Type DataType { get; }
 	}
 }

@@ -9,6 +9,7 @@ namespace SimpleNbtTests.Models
 	{
 		public BigTestContents Level { get; set; }
 		
+		/*
 		public static readonly BigTest ValidResult = new BigTest()
 		{
 			Level = new BigTestContents()
@@ -34,6 +35,7 @@ namespace SimpleNbtTests.Models
 				ByteArrayTest = Enumerable.Range(0, 1000).Select(n => (byte)(((n * n * 255) + (n * 7)) % 100)).ToArray()
 			}
 		};
+		*/
 		
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SimpleNbt.Tags
 {
@@ -33,7 +34,7 @@ namespace SimpleNbt.Tags
 		public string Name { get; }
 
 		private readonly List<T> _payload = new List<T>();
-
+		
 		/// <inheritdoc />
 		public void EncodePayload(Stream output)
 		{
@@ -58,7 +59,6 @@ namespace SimpleNbt.Tags
 			}
 		}
 
-
 		/// <inheritdoc />
 		IEnumerator<T> IEnumerable<T>.GetEnumerator() => _payload.GetEnumerator();
 
@@ -71,7 +71,7 @@ namespace SimpleNbt.Tags
 			if (item is null) throw new ArgumentNullException(nameof(item));
 			_payload.Add(item);
 		}
-
+		
 		/// <inheritdoc />
 		public void Clear() => _payload.Clear();
 
@@ -89,6 +89,7 @@ namespace SimpleNbt.Tags
 
 		/// <inheritdoc />
 		public bool IsReadOnly { get; } = false;
+
 
 		/// <inheritdoc />
 		public int IndexOf(T item) => _payload.IndexOf(item);
@@ -114,6 +115,47 @@ namespace SimpleNbt.Tags
 			}
 		}
 
+		#region IList
+
+		int IList.Add(object value)
+		{
+			lock (((ICollection) _payload).SyncRoot)
+			{
+				var ret = _payload.Count;
+				Add((T) value);
+				return ret;
+			}
+		}
+
+		bool IList.Contains(object value) => Contains((T) value);
+
+		int IList.IndexOf(object value) => IndexOf((T) value);
+
+		void IList.Insert(int index, object value) => Insert(index, (T) value);
+
+		void IList.Remove(object value) => Remove((T) value);
+
+		void ICollection.CopyTo(Array array, int index) => ((ICollection)_payload).CopyTo(array, index);
+
+		bool ICollection.IsSynchronized => ((ICollection) _payload).IsSynchronized;
+
+		object ICollection.SyncRoot => ((ICollection) _payload).SyncRoot;
+
+		object IList.this[int index]
+		{
+			get => _payload[index];
+			set
+			{
+				if (value is null) throw new ArgumentNullException(nameof(value));
+				if (!(value is T val)) throw new InvalidCastException();
+				_payload[index] = val;
+			}
+		}
+
+		bool IList.IsFixedSize => ((IList) _payload).IsFixedSize;
+
+		#endregion
+		
 		public override string ToString()
 		{
 			return "[" + string.Join(",", _payload) + "]";

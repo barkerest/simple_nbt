@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using SimpleNbt.Attributes;
 
@@ -16,32 +17,21 @@ namespace SimpleNbt.Internal
 
 			ExplicitName = attribute?.Name;
 
-			DataType = field.FieldType;
-
-			var t = attribute?.TagType;
-			if (t is null)
+			if (attribute != null && attribute.DataType != null)
 			{
-				Converter = Utility.FindDefaultToConverter(DataType)
-					?? throw new InvalidCastException($"Failed to locate converter for {DataType}.");
-				TagType = Converter.TagType;
+				if (!field.FieldType.IsAssignableFrom(attribute.DataType)) throw new InvalidCastException($"The explicit datatype in the attribute ({attribute.DataType}) is not assignable to the property type ({field.FieldType}).");
+				DataType = attribute.DataType;
 			}
 			else
 			{
-				TagType = t;
-				Converter = Utility.FindConverter(TagType, DataType) 
-					?? throw new InvalidCastException($"Failed to locate converter from {DataType} to {TagType}.");
+				DataType = field.FieldType;
 			}
 		}
 		
 		public string Name { get; }
 		
 		public string ExplicitName { get; }
-		
 		public Type DataType { get; }
-		
-		public Type TagType { get; }
-
-		public INamedBinaryTagConverter Converter { get; }
 
 		public object GetValue(object entity) => _field.GetValue(entity);
 

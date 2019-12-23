@@ -3,7 +3,9 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SimpleNbt;
+using SimpleNbt.Converters;
 using SimpleNbt.Tags;
+using SimpleNbtTests.Models;
 using Xunit;
 
 namespace SimpleNbtTests
@@ -167,6 +169,20 @@ namespace SimpleNbtTests
 			
 			Assert.NotNull(data);
 			Assert.Equal("Level", data.Name);
+		}
+
+		[Fact]
+		public void LoadBigTestClass()
+		{
+			var file = TestFileDirectory() + @"compressed/bigtest.nbt";
+
+			var data = Utility.LoadFromFile(file);
+
+			var entity = ObjectConverter.ConvertFromTag<BigTest>(data, NamingConvention.LowerCamelCase);
+
+			var level = entity.Level;
+			Assert.NotNull(level);
+			
 		}
 	}
 }

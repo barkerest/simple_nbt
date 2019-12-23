@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -11,6 +12,11 @@ namespace SimpleNbt
 {
 	public static class Utility
 	{
+		internal static readonly string DataTypeNameProperty = "--- SimpleNbt:DataTypeName ---";
+		internal static readonly string DataWrapperProperty = "--- SimpleNbt:DataWrapper ---";
+		internal static readonly string NonStringKeyValue = "--- SimpleNbt:KeyValue {0} ---";
+		internal static readonly Regex NonStringKeyValueMatch = new Regex(@"^--- SimpleNbt:KeyValue (\d+) ---$");
+		
 		#region Default Converters
 
 		private static long[] GuidToLongArray(Guid v)
@@ -357,6 +363,17 @@ namespace SimpleNbt
 				if (tagType == typeof(CompoundTag))
 				{
 					if (!createGenericIfMissing) return null;
+					
+					if (typeof(IDictionary).IsAssignableFrom(dataType))
+					{
+						return new GenericDictionaryConverter(dataType);
+					}
+				
+					if (typeof(IList).IsAssignableFrom(dataType))
+					{
+						return new GenericListConverter(dataType);
+					}
+				
 					return new GenericModelConverter(dataType);
 				}
 
@@ -382,6 +399,16 @@ namespace SimpleNbt
 				if (ret != null) return ret;
 
 				if (!createGenericIfMissing) return null;
+
+				if (typeof(IDictionary).IsAssignableFrom(dataType))
+				{
+					return new GenericDictionaryConverter(dataType);
+				}
+				
+				if (typeof(IList).IsAssignableFrom(dataType))
+				{
+					return new GenericListConverter(dataType);
+				}
 				
 				return new GenericModelConverter(dataType);
 			}

@@ -119,6 +119,47 @@ namespace SimpleNbt.Tags
 			}
 		}
 
+		#region IList
+
+		int IList.Add(object value)
+		{
+			lock (((ICollection) _payload).SyncRoot)
+			{
+				var ret = _payload.Count;
+				Add((INamedListBinaryTag) value);
+				return ret;
+			}
+		}
+
+		bool IList.Contains(object value) => Contains((INamedListBinaryTag) value);
+
+		int IList.IndexOf(object value) => IndexOf((INamedListBinaryTag) value);
+
+		void IList.Insert(int index, object value) => Insert(index, (INamedListBinaryTag) value);
+
+		void IList.Remove(object value) => Remove((INamedListBinaryTag) value);
+
+		void ICollection.CopyTo(Array array, int index) => ((ICollection) _payload).CopyTo(array, index);
+
+		bool ICollection.IsSynchronized => ((ICollection) _payload).IsSynchronized;
+
+		object ICollection.SyncRoot => ((ICollection) _payload).SyncRoot;
+
+		object IList.this[int index]
+		{
+			get => _payload[index];
+			set
+			{
+				if (value is null) throw new ArgumentNullException(nameof(value));
+				if (!(value is INamedListBinaryTag val)) throw new InvalidCastException();
+				_payload[index] = val;
+			}
+		}
+
+		bool IList.IsFixedSize => ((IList) _payload).IsFixedSize;
+
+		#endregion
+		
 		public override string ToString()
 		{
 			return "[" + string.Join(",", _payload) + "]";

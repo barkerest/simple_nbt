@@ -20,16 +20,6 @@ namespace SimpleNbt.Internal
 		Type DataType { get; }
 		
 		/// <summary>
-		/// Gets the tag type for the property or field.
-		/// </summary>
-		Type TagType { get; }
-		
-		/// <summary>
-		/// The converter for this property or field.
-		/// </summary>
-		INamedBinaryTagConverter Converter { get; }
-		
-		/// <summary>
 		/// Gets the value of this property or field from the entity.
 		/// </summary>
 		/// <param name="entity"></param>

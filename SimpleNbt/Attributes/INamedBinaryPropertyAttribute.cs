@@ -21,5 +21,10 @@ namespace SimpleNbt.Attributes
 		/// Tells the converter to use a specific named binary tag to hold the value of this property.
 		/// </summary>
 		Type TagType { get; }
+		
+		/// <summary>
+		/// Tells the convert to use a specific data type.  This is useful if the property takes an interface.
+		/// </summary>
+		Type DataType { get; }
 	}
 }
