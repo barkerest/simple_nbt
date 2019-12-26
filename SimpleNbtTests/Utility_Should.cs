@@ -181,6 +181,7 @@ namespace SimpleNbtTests
 			var entity = ObjectConverter.ConvertFromTag<BigTest>(data, NamingConvention.LowerCamelCase);
 
 			var level = entity.Level;
+			
 			Assert.NotNull(level);
 			
 		}
